@@ -1,126 +1,145 @@
-// src/components/auth/LoginScreen.jsx
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { sendLoginEmail } from "../../services/sendLoginEmail";
-import Loader from "../ui/Loader";
+// src/components/ui/Loader.jsx
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
-export default function LoginScreen({ onLogin }) {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+const STEPS = [
+  { text: "Connexion à Firebase...",         pct: 20 },
+  { text: "Récupération de vos dossiers...", pct: 45 },
+  { text: "Chargement de vos tâches...",     pct: 70 },
+  { text: "Synchronisation des données...",  pct: 88 },
+  { text: "Presque prêt...",                 pct: 96 },
+];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+export default function Loader({ visible }) {
+  const [step,     setStep]     = useState(0);
+  const [progress, setProgress] = useState(0);
 
-    const trimmed = email.trim().toLowerCase();
-
-    // validation email
-    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setError("Entrez un email valide.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // UX loading simulation
-      await new Promise((r) => setTimeout(r, 600));
-
-      // sauvegarde utilisateur
-      localStorage.setItem("lxco_user_email", trimmed);
-
-      // 🔥 ENVOI EMAIL DE CONNEXION
-      await sendLoginEmail(trimmed);
-
-      console.log("📩 Email de connexion envoyé :", trimmed);
-
-      // connexion utilisateur dans l’app
-      onLogin(trimmed);
-    } catch (err) {
-      console.error("❌ Erreur envoi email login :", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ LOADER AJOUTÉ ICI (nouveau)
-  if (loading) {
-    return <Loader text="Connexion en cours..." />;
-  }
+  useEffect(() => {
+    if (!visible) { setStep(0); setProgress(0); return; }
+    let i = 0;
+    const t = setInterval(() => {
+      i = Math.min(i + 1, STEPS.length - 1);
+      setStep(i);
+      setProgress(STEPS[i].pct);
+      if (i === STEPS.length - 1) clearInterval(t);
+    }, 700);
+    setProgress(STEPS[0].pct);
+    return () => clearInterval(t);
+  }, [visible]);
 
   return (
-    <div className="min-h-screen bg-surface-950 bg-mesh flex items-center justify-center p-4">
-      {/* Glow background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-brand-400/5 rounded-full blur-3xl" />
-      </div>
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.5 } }}
+          style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "#080a10",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            gap: 0,
+          }}
+        >
+          {/* Ambient glows */}
+          <div style={{
+            position: "absolute", top: "25%", left: "50%", transform: "translateX(-50%)",
+            width: 500, height: 500, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(61,110,246,0.12) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }}/>
+          <div style={{
+            position: "absolute", bottom: "20%", left: "25%",
+            width: 300, height: 300, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(96,144,250,0.07) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }}/>
 
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative w-full max-w-md"
-      >
-        {/* Logo */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-500/15 border border-brand-500/20 mb-4">
-            <span className="text-white font-bold text-lg">LXCO</span>
+          {/* Logo animé */}
+          <motion.div
+            animate={{ scale: [1, 1.06, 1], opacity: [0.9, 1, 0.9] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            style={{
+              width: 80, height: 80, borderRadius: 22,
+              background: "rgba(61,110,246,0.12)",
+              border: "1px solid rgba(61,110,246,0.25)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              marginBottom: 24,
+              boxShadow: "0 0 40px rgba(61,110,246,0.2)",
+            }}
+          >
+            <svg width="38" height="38" viewBox="0 0 32 32" fill="none">
+              <motion.rect
+                x="4" y="7" width="24" height="3.5" rx="1.75" fill="#6090fa"
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+              />
+              <motion.rect
+                x="4" y="14.25" width="18" height="3.5" rx="1.75" fill="#3d6ef6"
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+              />
+              <motion.rect
+                x="4" y="21.5" width="12" height="3.5" rx="1.75" fill="#2550eb"
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
+              />
+            </svg>
+          </motion.div>
+
+          {/* Titre */}
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            style={{ fontSize: 26, fontWeight: 800, color: "white", marginBottom: 6, letterSpacing: -0.5 }}
+          >
+            LXCO Tasks
+          </motion.h1>
+
+          {/* Message dynamique */}
+          <div style={{ height: 24, marginBottom: 32, overflow: "hidden" }}>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={step}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
+                style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textAlign: "center" }}
+              >
+                {STEPS[step].text}
+              </motion.p>
+            </AnimatePresence>
           </div>
 
-          <h1 className="font-display text-3xl font-bold text-white">
-            LXCO Tasks
-          </h1>
-          <p className="text-white/40 mt-2 text-sm">
-            Organisez votre travail efficacement
-          </p>
-        </div>
+          {/* Barre de progression */}
+          <div style={{
+            width: 240, height: 3,
+            background: "rgba(255,255,255,0.07)",
+            borderRadius: 999, overflow: "hidden",
+          }}>
+            <motion.div
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              style={{
+                height: "100%", borderRadius: 999,
+                background: "linear-gradient(90deg, #2550eb, #6090fa)",
+                boxShadow: "0 0 12px rgba(61,110,246,0.6)",
+              }}
+            />
+          </div>
 
-        {/* Card */}
-        <div className="card p-8">
-          <h2 className="text-xl font-semibold text-white mb-1">
-            Connexion
-          </h2>
-          <p className="text-white/40 text-sm mb-6">
-            Entrez votre email pour accéder à vos tâches
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs text-white/50 mb-2">
-                Adresse email
-              </label>
-
-              <input
-                type="email"
-                className="input"
-                placeholder="moupita@exemple.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError("");
-                }}
-              />
-
-              {error && (
-                <p className="text-red-400 text-xs mt-2">{error}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full flex justify-center items-center py-3"
-            >
-              Accéder à mes tâches →
-            </button>
-          </form>
-
-          <p className="text-center text-xs text-white/25 mt-6">
-            Vos données sont liées à votre email
-          </p>
-        </div>
-      </motion.div>
-    </div>
+          {/* Pourcentage */}
+          <motion.p
+            animate={{ opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 10, fontFamily: "monospace" }}
+          >
+            {progress}%
+          </motion.p>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
