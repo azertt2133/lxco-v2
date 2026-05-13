@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    background-color: #080a10;
+    color: white;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl
+           bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+           text-white font-semibold text-sm
+           shadow-brand transition-all duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl
+           font-medium text-sm transition-all duration-200;
+    color: rgba(255,255,255,0.6);
+  }
+  .btn-ghost:hover {
+    color: white;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl
+           text-red-400 font-medium text-sm transition-all duration-200;
+  }
+  .btn-danger:hover {
+    color: white;
+    background: rgba(239,68,68,0.2);
+  }
+
+  .card {
+    @apply bg-surface-800 rounded-2xl shadow-card transition-all duration-300;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .card-hover {
+    @apply bg-surface-800 rounded-2xl shadow-card transition-all duration-300;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .card-hover:hover {
+    border-color: rgba(255,255,255,0.12);
+    @apply shadow-card-lg -translate-y-0.5;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 rounded-xl text-white text-sm transition-all duration-200;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .input::placeholder { color: rgba(255,255,255,0.3); }
+  .input:focus {
+    outline: none;
+    border-color: rgba(61,110,246,0.5);
+    box-shadow: 0 0 0 2px rgba(61,110,246,0.15);
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold;
+  }
+  .badge-pending { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  .badge-active  { background: rgba(61,110,246,0.15); color: #6090fa; }
+  .badge-done    { background: rgba(16,185,129,0.15); color: #34d399; }
+
+  .progress-bar {
+    @apply h-1.5 rounded-full overflow-hidden;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-700 ease-out;
+    background: linear-gradient(90deg, #3d6ef6, #6090fa);
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl
+           font-medium text-sm transition-all duration-200 cursor-pointer w-full;
+    color: rgba(255,255,255,0.5);
+  }
+  .sidebar-link:hover {
+    color: white;
+    background: rgba(255,255,255,0.06);
+  }
+  .sidebar-link.active {
+    color: white;
+    background: rgba(61,110,246,0.15);
+    border: 1px solid rgba(61,110,246,0.2);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #6090fa, #93b4fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glass {
+    backdrop-filter: blur(16px);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .animate-in {
+    animation: slideUp 0.4s ease forwards;
+  }
+  .bg-mesh {
+    background-image:
+      radial-gradient(at 40% 20%, rgba(61,110,246,0.15) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(0,217,255,0.08) 0px, transparent 50%);
+  }
+}
+
+/* Toastify */
+.Toastify__toast {
+  background: #1a1d2e !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: white !important;
+  border-radius: 12px !important;
+}
+.Toastify__progress-bar { background: #3d6ef6 !important; }
