@@ -5,6 +5,7 @@ import { useApp } from "../context/AppContext";
 import TaskCard from "../components/tasks/TaskCard";
 import { TaskModal } from "../components/tasks/TaskModal";
 
+
 const FILTERS = ["Toutes", "En attente", "En cours", "Terminées"];
 const STATUS_MAP = { "En attente": "pending", "En cours": "active", "Terminées": "done" };
 
